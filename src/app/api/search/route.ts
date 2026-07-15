@@ -8,6 +8,31 @@ import { digestVideo, combineNotes, type TokenCount, type VideoDigest } from '@/
 // Processing 10 videos + AI generation takes a while.
 export const maxDuration = 300;
 
+// Digest a few videos at a time — free-tier providers (Groq) have
+// per-minute token limits that 10 simultaneous calls would blow through.
+const DIGEST_CONCURRENCY = 3;
+
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T) => Promise<R>,
+): Promise<PromiseSettledResult<R>[]> {
+  const results: PromiseSettledResult<R>[] = new Array(items.length);
+  let next = 0;
+  const workers = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (next < items.length) {
+      const i = next++;
+      try {
+        results[i] = { status: 'fulfilled', value: await fn(items[i]) };
+      } catch (reason) {
+        results[i] = { status: 'rejected', reason };
+      }
+    }
+  });
+  await Promise.all(workers);
+  return results;
+}
+
 export async function POST(request: Request) {
   const supabase = await createClient();
   const {
@@ -61,20 +86,25 @@ export async function POST(request: Request) {
       })),
     );
 
-    // 3. Transcript (or captions) → per-video digest, all videos in parallel.
-    const digestResults = await Promise.allSettled(
-      videos.map(async (video) => {
-        const transcript = await getTranscript(video.youtubeId);
-        return digestVideo(video, transcript, tokens);
-      }),
-    );
+    // 3. Transcript (or captions) → per-video digest, rate-limit-friendly.
+    const digestResults = await mapWithConcurrency(videos, DIGEST_CONCURRENCY, async (video) => {
+      const transcript = await getTranscript(video.youtubeId);
+      return digestVideo(video, transcript, tokens);
+    });
     const digests = digestResults
       .filter((r): r is PromiseFulfilledResult<VideoDigest> => r.status === 'fulfilled')
       .map((r) => r.value)
       .filter((d) => d.digest.trim().length > 0);
 
     if (digests.length === 0) {
-      throw new Error('Could not generate notes from any of the videos');
+      const firstFailure = digestResults.find(
+        (r): r is PromiseRejectedResult => r.status === 'rejected',
+      );
+      const cause =
+        firstFailure?.reason instanceof Error
+          ? firstFailure.reason.message
+          : String(firstFailure?.reason ?? 'unknown error');
+      throw new Error(`Could not generate notes from any of the videos — ${cause}`);
     }
 
     // 4. Merge into one deduplicated study document.

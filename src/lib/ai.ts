@@ -3,8 +3,6 @@ import 'server-only';
 import OpenAI from 'openai';
 import type { YouTubeVideoMeta } from '@/lib/types';
 
-const MODEL = process.env.OPENAI_MODEL ?? 'gpt-4o-mini';
-
 export interface TokenCount {
   promptTokens: number;
   completionTokens: number;
@@ -17,10 +15,49 @@ export interface VideoDigest {
   hadTranscript: boolean;
 }
 
-function getClient() {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) throw new Error('OPENAI_API_KEY is not configured');
-  return new OpenAI({ apiKey });
+interface Provider {
+  name: string;
+  client: OpenAI;
+  model: string;
+}
+
+/**
+ * Provider chain, tried in order. Groq first (fast + free tier), then
+ * OpenAI or any OpenAI-compatible endpoint via OPENAI_BASE_URL.
+ */
+function getProviders(): Provider[] {
+  const providers: Provider[] = [];
+
+  if (process.env.GROQ_API_KEY) {
+    providers.push({
+      name: 'groq',
+      client: new OpenAI({
+        apiKey: process.env.GROQ_API_KEY,
+        baseURL: 'https://api.groq.com/openai/v1',
+        // Groq free tier has per-minute token limits; the SDK honors
+        // retry-after on 429s, so retries ride out the rate window.
+        maxRetries: 5,
+      }),
+      model: process.env.GROQ_MODEL ?? 'llama-3.3-70b-versatile',
+    });
+  }
+
+  if (process.env.OPENAI_API_KEY) {
+    providers.push({
+      name: 'openai',
+      client: new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+        baseURL: process.env.OPENAI_BASE_URL || undefined,
+        maxRetries: 0, // fallback should fail fast, not stall the request
+      }),
+      model: process.env.OPENAI_MODEL ?? 'gpt-4o-mini',
+    });
+  }
+
+  if (providers.length === 0) {
+    throw new Error('No AI provider configured — set GROQ_API_KEY or OPENAI_API_KEY');
+  }
+  return providers;
 }
 
 function addUsage(total: TokenCount, usage?: OpenAI.CompletionUsage | null) {
@@ -28,6 +65,30 @@ function addUsage(total: TokenCount, usage?: OpenAI.CompletionUsage | null) {
   total.promptTokens += usage.prompt_tokens ?? 0;
   total.completionTokens += usage.completion_tokens ?? 0;
   total.totalTokens += usage.total_tokens ?? 0;
+}
+
+/** Try each provider in order; return the first successful completion. */
+async function chat(
+  messages: OpenAI.ChatCompletionMessageParam[],
+  opts: { maxTokens: number; temperature: number },
+  tokens: TokenCount,
+): Promise<string> {
+  const errors: string[] = [];
+  for (const provider of getProviders()) {
+    try {
+      const res = await provider.client.chat.completions.create({
+        model: provider.model,
+        messages,
+        temperature: opts.temperature,
+        max_tokens: opts.maxTokens,
+      });
+      addUsage(tokens, res.usage);
+      return res.choices[0]?.message?.content ?? '';
+    } catch (err) {
+      errors.push(`${provider.name}: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  }
+  throw new Error(`All AI providers failed — ${errors.join(' | ')}`);
 }
 
 /**
@@ -39,16 +100,12 @@ export async function digestVideo(
   transcript: string | null,
   tokens: TokenCount,
 ): Promise<VideoDigest> {
-  const openai = getClient();
-
   const source = transcript
     ? `Transcript (may be auto-generated, tolerate errors):\n${transcript}`
     : `No transcript is available. Use the title, channel, and your own knowledge of this well-known topic to infer what such a tutorial covers.`;
 
-  const res = await openai.chat.completions.create({
-    model: MODEL,
-    temperature: 0.3,
-    messages: [
+  const digest = await chat(
+    [
       {
         role: 'system',
         content:
@@ -59,15 +116,11 @@ export async function digestVideo(
         content: `Video: "${video.title}" by ${video.channel} (${video.duration})\n\n${source}`,
       },
     ],
-    max_tokens: 700,
-  });
+    { maxTokens: 700, temperature: 0.3 },
+    tokens,
+  );
 
-  addUsage(tokens, res.usage);
-  return {
-    video,
-    digest: res.choices[0]?.message?.content ?? '',
-    hadTranscript: Boolean(transcript),
-  };
+  return { video, digest, hadTranscript: Boolean(transcript) };
 }
 
 /**
@@ -79,16 +132,12 @@ export async function combineNotes(
   digests: VideoDigest[],
   tokens: TokenCount,
 ): Promise<string> {
-  const openai = getClient();
-
   const corpus = digests
     .map((d, i) => `--- Video ${i + 1}: "${d.video.title}" (${d.video.channel}) ---\n${d.digest}`)
     .join('\n\n');
 
-  const res = await openai.chat.completions.create({
-    model: MODEL,
-    temperature: 0.4,
-    messages: [
+  return chat(
+    [
       {
         role: 'system',
         content: `You are an expert curriculum author. Merge notes from multiple videos on the same topic into ONE high-quality study document. Remove duplicate content, resolve contradictions, and organize logically. The result must be better than any single video's notes.
@@ -127,9 +176,7 @@ Additional learning resources (official docs, books, courses).`,
         content: `Topic: ${topic}\n\nNotes extracted from ${digests.length} videos:\n\n${corpus}`,
       },
     ],
-    max_tokens: 4000,
-  });
-
-  addUsage(tokens, res.usage);
-  return res.choices[0]?.message?.content ?? '';
+    { maxTokens: 4000, temperature: 0.4 },
+    tokens,
+  );
 }

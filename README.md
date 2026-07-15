@@ -30,8 +30,12 @@ Next.js 15 (App Router, TypeScript) · Tailwind CSS · Supabase (Postgres + Auth
 
 ### 2. API keys
 
-- **OpenAI** — create a key at platform.openai.com.
-- **YouTube Data API v3** — enable it in Google Cloud Console and create an API key.
+- **AI provider** — the app tries providers in order and falls back automatically:
+  1. **Groq** (`GROQ_API_KEY`, optional `GROQ_MODEL`, default `llama-3.3-70b-versatile`) — free tier at console.groq.com, tried first.
+  2. **OpenAI** (`OPENAI_API_KEY`, optional `OPENAI_MODEL`) — or any OpenAI-compatible endpoint via `OPENAI_BASE_URL` (e.g. Gemini: `https://generativelanguage.googleapis.com/v1beta/openai/`).
+
+  At least one must be set.
+- **YouTube Data API v3** — enable it in Google Cloud Console and create an API key (starts with `AIza`, not an OAuth client ID).
 
 ### 3. Environment
 
