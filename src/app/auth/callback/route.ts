@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { getBaseUrl } from '@/lib/url';
 
 /**
  * Google OAuth callback. Exchanges the auth code for a session, then:
@@ -9,7 +10,9 @@ import { createAdminClient } from '@/lib/supabase/admin';
  *  - promotes the user to admin when their email is in ADMIN_EMAILS
  */
 export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url);
+  const { searchParams } = new URL(request.url);
+  // Proxy-safe public origin — never the internal host, never localhost in prod.
+  const origin = getBaseUrl(request);
   const code = searchParams.get('code');
   const next = searchParams.get('next') ?? '/dashboard';
 

@@ -4,10 +4,15 @@ import {
   Bot,
   Check,
   Clock,
+  Coins,
   FileDown,
   FileText,
+  Github,
   Globe,
   GraduationCap,
+  History,
+  LayoutDashboard,
+  Linkedin,
   ListOrdered,
   Mail,
   NotebookText,
@@ -15,9 +20,17 @@ import {
   ShieldCheck,
   Sparkles,
   Star,
+  Twitter,
   Users,
   Youtube,
 } from 'lucide-react';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { ContactForm } from '@/components/ContactForm';
+import {
+  StudyIllustration,
+  QuizIllustration,
+  SynthesisIllustration,
+} from '@/components/BlogIllustrations';
 const NAV_LINKS = [
   { href: '#top', label: 'Home' },
   { href: '#about', label: 'About Us' },
@@ -79,6 +92,7 @@ export default function LandingPage() {
           </nav>
 
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <Link
               href={appHref}
               className="rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2 text-sm font-semibold text-white shadow-md transition hover:opacity-90 sm:px-5"
@@ -381,11 +395,14 @@ export default function LandingPage() {
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {[
               { icon: Youtube, title: 'Top 10 Video Curation', desc: 'Every search pulls the 10 most relevant YouTube videos with title, channel, duration, views, and publish date.' },
-              { icon: Bot, title: 'AI Study Notes', desc: 'Transcripts from all videos are merged into one deduplicated document — better than any single video.' },
+              { icon: Bot, title: 'AI Summary & Smart Notes', desc: 'Transcripts from all videos are merged into one deduplicated study document — better than any single video.' },
               { icon: ListOrdered, title: 'Interactive Quizzes', desc: '10 MCQs per topic with answers hidden until you attempt each question, plus live scoring.' },
               { icon: NotebookText, title: 'Interview Prep', desc: 'A dedicated interview questions module for every topic, downloadable as a clean PDF.' },
               { icon: FileDown, title: 'PDF Export', desc: 'Export study notes, interview questions, and quizzes as professionally formatted PDFs.' },
-              { icon: ShieldCheck, title: 'Private & Secure', desc: 'Google sign-in with row-level security — your history, notes, and tokens are yours alone.' },
+              { icon: Coins, title: 'Token Usage Tracking', desc: 'Prompt, completion, and total AI tokens tracked per search — always know your usage.' },
+              { icon: History, title: 'Search & History', desc: 'Search any topic with no restrictions; every search, summary, and export is saved to your private history.' },
+              { icon: LayoutDashboard, title: 'Personal Dashboard', desc: 'Recent searches, generated notes, and usage stats — everything in one clean, responsive dashboard.' },
+              { icon: ShieldCheck, title: 'Secure Admin Panel', desc: 'Google sign-in with row-level security, plus an admin panel to monitor users, searches, and tokens.' },
             ].map((f) => (
               <div
                 key={f.title}
@@ -402,81 +419,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Pricing ────────────────────────────────────────────────────── */}
-      <section id="pricing" className="mx-auto max-w-7xl scroll-mt-20 px-4 py-20 sm:px-6">
-        <div className="text-center">
-          <p className="text-sm font-semibold uppercase tracking-wide text-indigo-600 dark:text-indigo-400">
-            Pricing
-          </p>
-          <h2 className="mt-2 text-3xl font-bold sm:text-4xl">Start free, upgrade when you grow</h2>
-        </div>
-        <div className="mt-12 grid gap-6 lg:grid-cols-3">
-          {[
-            {
-              name: 'Free',
-              price: '$0',
-              tagline: 'For getting started',
-              features: ['5 topic searches / month', 'AI study notes', 'Interactive quizzes', 'PDF export'],
-              highlight: false,
-            },
-            {
-              name: 'Pro',
-              price: '$9',
-              tagline: 'For serious learners',
-              features: ['Unlimited searches', 'Priority AI generation', 'Interview prep module', 'Full history & analytics'],
-              highlight: true,
-            },
-            {
-              name: 'Team',
-              price: '$29',
-              tagline: 'For classrooms & teams',
-              features: ['Everything in Pro', 'Admin dashboard', 'Usage monitoring', 'Priority support'],
-              highlight: false,
-            },
-          ].map((p) => (
-            <div
-              key={p.name}
-              className={`rounded-3xl border p-8 ${
-                p.highlight
-                  ? 'border-indigo-600 bg-gradient-to-b from-indigo-600 to-violet-700 text-white shadow-xl'
-                  : 'border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800'
-              }`}
-            >
-              <p className={`text-sm font-semibold ${p.highlight ? 'text-indigo-200' : 'text-indigo-600 dark:text-indigo-400'}`}>
-                {p.name}
-              </p>
-              <p className="mt-2 text-4xl font-extrabold">
-                {p.price}
-                <span className={`text-base font-medium ${p.highlight ? 'text-indigo-200' : 'text-slate-400'}`}>
-                  /month
-                </span>
-              </p>
-              <p className={`mt-1 text-sm ${p.highlight ? 'text-indigo-100' : 'text-slate-500 dark:text-slate-400'}`}>
-                {p.tagline}
-              </p>
-              <ul className="mt-6 space-y-3">
-                {p.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm">
-                    <Check className={`mt-0.5 h-4 w-4 shrink-0 ${p.highlight ? 'text-white' : 'text-green-500'}`} />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href={appHref}
-                className={`mt-8 block rounded-full py-3 text-center font-semibold transition ${
-                  p.highlight
-                    ? 'bg-white text-indigo-700 hover:bg-indigo-50'
-                    : 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white hover:opacity-90'
-                }`}
-              >
-                Get Started Free
-              </Link>
-            </div>
-          ))}
-        </div>
-      </section>
-
+ 
       {/* ── Blog ───────────────────────────────────────────────────────── */}
       <section id="blog" className="scroll-mt-20 bg-slate-50 py-20 dark:bg-slate-900/60">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
@@ -488,15 +431,15 @@ export default function LandingPage() {
           </div>
           <div className="mt-12 grid gap-6 lg:grid-cols-3">
             {[
-              { tag: 'Study Tips', title: 'How to learn any tech topic in a weekend', blurb: 'A practical system for compressing 10 hours of video into 2 hours of focused study.', gradient: 'from-indigo-500 to-violet-500' },
-              { tag: 'Product', title: 'Quizzes now hide answers until you attempt', blurb: 'Our quiz module now scores you live and never spoils the answer before you try.', gradient: 'from-fuchsia-500 to-rose-500' },
-              { tag: 'AI', title: 'Why 10 videos beat 1 — the science of synthesis', blurb: 'Merging multiple expert explanations fills the gaps any single tutorial leaves behind.', gradient: 'from-sky-500 to-indigo-500' },
+              { tag: 'Study Tips', title: 'How to learn any tech topic in a weekend', blurb: 'A practical system for compressing 10 hours of video into 2 hours of focused study.', art: <StudyIllustration /> },
+              { tag: 'Product', title: 'Quizzes now hide answers until you attempt', blurb: 'Our quiz module now scores you live and never spoils the answer before you try.', art: <QuizIllustration /> },
+              { tag: 'AI', title: 'Why 10 videos beat 1 — the science of synthesis', blurb: 'Merging multiple expert explanations fills the gaps any single tutorial leaves behind.', art: <SynthesisIllustration /> },
             ].map((b) => (
               <article
                 key={b.title}
                 className="overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-1 hover:shadow-lg dark:border-slate-700 dark:bg-slate-800"
               >
-                <div className={`h-36 bg-gradient-to-br ${b.gradient}`} />
+                {b.art}
                 <div className="p-6">
                   <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600 dark:bg-slate-700 dark:text-indigo-300">
                     {b.tag}
@@ -512,25 +455,53 @@ export default function LandingPage() {
 
       {/* ── Contact ────────────────────────────────────────────────────── */}
       <section id="contact" className="mx-auto max-w-7xl scroll-mt-20 px-4 py-20 sm:px-6">
-        <div className="rounded-3xl bg-gradient-to-r from-indigo-600 to-violet-600 p-10 text-center text-white sm:p-14">
-          <p className="text-sm font-semibold uppercase tracking-wide text-indigo-200">Contact</p>
-          <h2 className="mt-2 text-3xl font-bold sm:text-4xl">We&apos;d love to hear from you</h2>
-          <p className="mx-auto mt-3 max-w-xl text-indigo-100">
-            Questions, feedback, or feature requests — reach out and we&apos;ll get back to you.
-          </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <a
-              href="mailto:support@symbiosystech.com"
-              className="flex items-center gap-2 rounded-full bg-white px-6 py-3 font-semibold text-indigo-700 transition hover:bg-indigo-50"
-            >
-              <Mail className="h-4 w-4" /> support@symbiosystech.com
-            </a>
-            <Link
-              href={appHref}
-              className="flex items-center gap-2 rounded-full border border-white/40 px-6 py-3 font-semibold text-white transition hover:bg-white/10"
-            >
-              Sign In <ArrowRight className="h-4 w-4" />
-            </Link>
+        <div className="rounded-3xl bg-gradient-to-r from-indigo-600 to-violet-600 p-8 text-white sm:p-12">
+          <div className="grid items-start gap-10 lg:grid-cols-2">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-wide text-indigo-200">Contact</p>
+              <h2 className="mt-2 text-3xl font-bold sm:text-4xl">We&apos;d love to hear from you</h2>
+              <p className="mt-3 max-w-xl text-indigo-100">
+                Questions, feedback, or feature requests — reach out and we&apos;ll get back to you.
+              </p>
+              <a
+                href="mailto:support@symbiosystech.com"
+                className="mt-6 inline-flex items-center gap-2 rounded-full bg-white/15 px-5 py-2.5 font-medium text-white transition hover:bg-white/25"
+              >
+                <Mail className="h-4 w-4" /> support@symbiosystech.com
+              </a>
+              <div className="mt-6">
+                <p className="text-sm font-semibold text-indigo-200">Follow us</p>
+                <div className="mt-3 flex gap-3">
+                  {[
+                    { icon: Github, label: 'GitHub', href: 'https://github.com/yasaswinipilla41/youtube_summary' },
+                    { icon: Twitter, label: 'Twitter / X', href: 'https://twitter.com' },
+                    { icon: Linkedin, label: 'LinkedIn', href: 'https://linkedin.com' },
+                    { icon: Youtube, label: 'YouTube', href: 'https://youtube.com' },
+                  ].map((s) => (
+                    <a
+                      key={s.label}
+                      href={s.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={s.label}
+                      className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 transition hover:bg-white/30"
+                    >
+                      <s.icon className="h-5 w-5" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+              <Link
+                href={appHref}
+                className="mt-8 inline-flex items-center gap-2 rounded-full border border-white/40 px-6 py-3 font-semibold text-white transition hover:bg-white/10"
+              >
+                Sign In <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+            <div className="rounded-2xl bg-white/10 p-6 backdrop-blur">
+              <h3 className="mb-4 text-lg font-semibold">Send us a message</h3>
+              <ContactForm />
+            </div>
           </div>
         </div>
       </section>

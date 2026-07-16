@@ -1,4 +1,5 @@
-import { Coins, FileText, Search as SearchIcon, Users } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowUpRight, Coins, FileText, Search as SearchIcon, Users } from 'lucide-react';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { StatCard } from '@/components/StatCard';
 import { TopTopicsChart, TokensOverTimeChart } from '@/components/AdminCharts';
@@ -55,30 +56,46 @@ export default async function AdminOverviewPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard icon={Users} label="Registered users" value={String(studentsRes.count ?? 0)} />
-        <StatCard icon={SearchIcon} label="Total searches" value={String(searches.length)} />
-        <StatCard icon={FileText} label="Notes generated" value={String(summariesRes.count ?? 0)} />
-        <StatCard icon={Coins} label="Total tokens used" value={formatNumber(totalTokens)} />
+        <StatCard icon={Users} label="Registered users" value={String(studentsRes.count ?? 0)} href="/admin/students" />
+        <StatCard icon={SearchIcon} label="Total searches" value={String(searches.length)} href="/admin/searches" />
+        <StatCard icon={FileText} label="Notes generated" value={String(summariesRes.count ?? 0)} href="/admin/notes" />
+        <StatCard icon={Coins} label="Total tokens used" value={formatNumber(totalTokens)} href="/admin/tokens" />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <section className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
-          <h2 className="mb-4 font-semibold">Most searched topics</h2>
+        <Link
+          href="/admin/searches"
+          className="block rounded-2xl border border-slate-200 bg-white p-6 transition hover:-translate-y-0.5 hover:border-brand-500 hover:shadow-md dark:border-slate-700 dark:bg-slate-800"
+        >
+          <h2 className="mb-4 flex items-center justify-between font-semibold">
+            Most searched topics
+            <span className="flex items-center gap-1 text-xs font-medium text-slate-400">
+              Search analytics <ArrowUpRight className="h-3.5 w-3.5" />
+            </span>
+          </h2>
           {topTopics.length === 0 ? (
             <p className="text-sm text-slate-400">No searches yet.</p>
           ) : (
             <TopTopicsChart data={topTopics} />
           )}
-        </section>
+        </Link>
 
-        <section className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
-          <h2 className="mb-4 font-semibold">Token usage — last 30 days</h2>
+        <Link
+          href="/admin/tokens"
+          className="block rounded-2xl border border-slate-200 bg-white p-6 transition hover:-translate-y-0.5 hover:border-brand-500 hover:shadow-md dark:border-slate-700 dark:bg-slate-800"
+        >
+          <h2 className="mb-4 flex items-center justify-between font-semibold">
+            Token usage — last 30 days
+            <span className="flex items-center gap-1 text-xs font-medium text-slate-400">
+              Token reports <ArrowUpRight className="h-3.5 w-3.5" />
+            </span>
+          </h2>
           {dailyTokens.length === 0 ? (
             <p className="text-sm text-slate-400">No token usage recorded yet.</p>
           ) : (
             <TokensOverTimeChart data={dailyTokens} />
           )}
-        </section>
+        </Link>
       </div>
     </div>
   );

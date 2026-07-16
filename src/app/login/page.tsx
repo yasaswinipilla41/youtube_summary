@@ -4,6 +4,7 @@ import { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { GraduationCap, Loader2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 function GoogleIcon() {
   return (
@@ -82,7 +83,10 @@ function LoginCard() {
 
 export default function LoginPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-brand-50 via-white to-indigo-100 p-4 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
+    <main className="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-brand-50 via-white to-indigo-100 p-4 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
+      <div className="absolute right-4 top-4">
+        <ThemeToggle />
+      </div>
       <Suspense>
         <LoginCard />
       </Suspense>
