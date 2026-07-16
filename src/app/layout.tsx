@@ -12,7 +12,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen bg-slate-50 text-slate-900 antialiased dark:bg-slate-900 dark:text-slate-100">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        {/* Light theme by default everywhere; the navbar toggle switches to
+            dark and the choice is persisted in localStorage. */}
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           {children}
         </ThemeProvider>
       </body>
