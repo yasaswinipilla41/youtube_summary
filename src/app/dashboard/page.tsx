@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { BookOpen, Coins, FileText, SearchIcon } from 'lucide-react';
+import { BookOpen, Coins, ExternalLink, FileText, SearchIcon } from 'lucide-react';
 import { requireUser } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/server';
 import { SearchBox } from '@/components/SearchBox';
@@ -85,13 +85,21 @@ export default async function DashboardPage() {
           ) : (
             <ul className="divide-y divide-slate-100 dark:divide-slate-700">
               {summaries.map((s) => (
-                <li key={s.id}>
+                <li key={s.id} className="flex items-center justify-between gap-2 py-2.5">
                   <Link
                     href={`/dashboard/notes/${s.id}`}
-                    className="flex items-center justify-between py-2.5 transition hover:text-brand-600 dark:hover:text-brand-100"
+                    className="min-w-0 flex-1 truncate font-medium transition hover:text-brand-600 dark:hover:text-brand-100"
                   >
-                    <span className="truncate font-medium">{s.topic}</span>
-                    <span className="ml-3 shrink-0 text-xs text-slate-400">{timeAgo(s.created_at)}</span>
+                    {s.topic}
+                  </Link>
+                  <span className="shrink-0 text-xs text-slate-400">{timeAgo(s.created_at)}</span>
+                  <Link
+                    href={`/dashboard/notes/${s.id}/content`}
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-slate-700 dark:hover:text-brand-100"
+                    title="Open study content"
+                    aria-label={`Open study content for ${s.topic}`}
+                  >
+                    <ExternalLink className="h-4 w-4" />
                   </Link>
                 </li>
               ))}

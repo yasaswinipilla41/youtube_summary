@@ -29,7 +29,7 @@ export default async function AdminStudentsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">All students</h1>
+        <h1 className="text-2xl font-bold">All users</h1>
         <p className="mt-1 text-slate-500 dark:text-slate-400">
           {users.length} registered user{users.length === 1 ? '' : 's'}. Click a row for full activity.
         </p>

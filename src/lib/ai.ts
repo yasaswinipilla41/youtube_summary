@@ -163,7 +163,7 @@ A bullet list of must-remember points.
 8-12 realistic interview questions with brief model answers.
 
 # Quiz
-Exactly 10 multiple-choice questions, options A-D, with an answer key at the end.
+Exactly 10 multiple-choice questions. Number each question ("1." through "10."), put each of the four options on its own line formatted exactly "A) option text" through "D) option text", and end the section with a "### Answer Key" heading followed by one line per question in the form "1. B".
 
 # Practical Exercises
 3-5 hands-on tasks of increasing difficulty.

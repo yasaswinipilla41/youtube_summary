@@ -50,12 +50,12 @@ export default async function AdminOverviewPage() {
       <div>
         <h1 className="text-2xl font-bold sm:text-3xl">Admin overview</h1>
         <p className="mt-1 text-slate-500 dark:text-slate-400">
-          Platform-wide activity across all students.
+          Platform-wide activity across all users.
         </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard icon={Users} label="Registered students" value={String(studentsRes.count ?? 0)} />
+        <StatCard icon={Users} label="Registered users" value={String(studentsRes.count ?? 0)} />
         <StatCard icon={SearchIcon} label="Total searches" value={String(searches.length)} />
         <StatCard icon={FileText} label="Notes generated" value={String(summariesRes.count ?? 0)} />
         <StatCard icon={Coins} label="Total tokens used" value={formatNumber(totalTokens)} />

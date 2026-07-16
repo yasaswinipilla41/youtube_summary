@@ -73,7 +73,9 @@ export function AppShell({
                 <p className="max-w-[10rem] truncate text-sm font-medium leading-tight">
                   {profile.name ?? profile.email}
                 </p>
-                <p className="text-xs capitalize text-slate-400">{profile.role}</p>
+                <p className="text-xs capitalize text-slate-400">
+                  {profile.role === 'student' ? 'user' : profile.role}
+                </p>
               </div>
             </div>
             <form action="/auth/signout" method="post">

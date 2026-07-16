@@ -76,7 +76,9 @@ export default async function AdminStudentDetailPage({
         <div>
           <h1 className="text-2xl font-bold">{student.name ?? student.email}</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            {student.email} · <span className="capitalize">{student.role}</span> · Last login{' '}
+            {student.email} ·{' '}
+            <span className="capitalize">{student.role === 'student' ? 'user' : student.role}</span>{' '}
+            · Last login{' '}
             {formatDateTime(student.last_login)}
           </p>
         </div>

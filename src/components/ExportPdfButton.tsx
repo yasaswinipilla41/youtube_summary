@@ -7,13 +7,28 @@ import { createClient } from '@/lib/supabase/client';
 interface Props {
   summaryId: string;
   topic: string;
-  studentName: string;
+  userName: string;
   searchDate: string;
   markdown: string;
+  /** PDF header title. Defaults to the full study-notes heading. */
+  heading?: string;
+  /** Button label. Defaults to "Export as PDF". */
+  label?: string;
+  /** Filename suffix, e.g. "interview-questions". */
+  fileSuffix?: string;
 }
 
-/** Renders the study notes into a professionally formatted PDF client-side. */
-export function ExportPdfButton({ summaryId, topic, studentName, searchDate, markdown }: Props) {
+/** Renders the given markdown into a professionally formatted PDF client-side. */
+export function ExportPdfButton({
+  summaryId,
+  topic,
+  userName,
+  searchDate,
+  markdown,
+  heading = 'AI Learning Platform — Study Notes',
+  label = 'Export as PDF',
+  fileSuffix = 'study-notes',
+}: Props) {
   const [busy, setBusy] = useState(false);
 
   async function exportPdf() {
@@ -34,11 +49,11 @@ export function ExportPdfButton({ summaryId, topic, studentName, searchDate, mar
       doc.setTextColor(255, 255, 255);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(22);
-      doc.text('AI Learning Platform — Study Notes', margin, 52);
+      doc.text(heading, margin, 52);
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(11);
       doc.text(`Topic: ${topic}`, margin, 78);
-      doc.text(`Student: ${studentName}    |    Date: ${searchDate}`, margin, 96);
+      doc.text(`User: ${userName}    |    Date: ${searchDate}`, margin, 96);
       doc.setTextColor(30, 41, 59);
       y = 150;
 
@@ -122,7 +137,7 @@ export function ExportPdfButton({ summaryId, topic, studentName, searchDate, mar
         doc.setTextColor(30, 41, 59);
       }
 
-      doc.save(`${topic.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}-study-notes.pdf`);
+      doc.save(`${topic.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}-${fileSuffix}.pdf`);
 
       // Log the export (RLS: insert own row only).
       const supabase = createClient();
@@ -148,7 +163,7 @@ export function ExportPdfButton({ summaryId, topic, studentName, searchDate, mar
       className="flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-brand-700 disabled:opacity-60"
     >
       {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileDown className="h-4 w-4" />}
-      Export as PDF
+      {label}
     </button>
   );
 }
