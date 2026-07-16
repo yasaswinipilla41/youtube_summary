@@ -86,7 +86,7 @@ export function SearchBox() {
           className="flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-3 font-medium text-white transition hover:bg-brand-700 disabled:opacity-50"
         >
           {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Sparkles className="h-5 w-5" />}
-          <span className="hidden sm:inline">{loading ? 'Working…' : 'Learn'}</span>
+          <span className="hidden sm:inline">{loading ? 'Working…' : 'summarize'}</span>
         </button>
       </form>
 

@@ -174,11 +174,14 @@ export function ExportPdfButton({
         }
         lastWasBlank = false;
 
+        // Heading text must not include the markdown "#" markers.
+        const headingText = trimmed.replace(/^#+\s*/, '');
+
         if (raw.startsWith('# ')) {
           // Keep heading attached to at least two lines of the section body.
           y += 18;
           ensureRoom(24 * HEADING_LH + 2 * BODY_SIZE * BODY_LH + 20);
-          writeBlock(trimmed, { size: 17, style: 'bold', lh: HEADING_LH });
+          writeBlock(headingText, { size: 17, style: 'bold', lh: HEADING_LH });
           doc.setDrawColor(79, 70, 229);
           doc.setLineWidth(1);
           doc.line(MARGIN, y + 3, MARGIN + usable, y + 3);
@@ -186,12 +189,12 @@ export function ExportPdfButton({
         } else if (raw.startsWith('## ')) {
           y += 12;
           ensureRoom(15 * HEADING_LH + 2 * BODY_SIZE * BODY_LH + 12);
-          writeBlock(trimmed, { size: 14, style: 'bold', lh: HEADING_LH });
+          writeBlock(headingText, { size: 14, style: 'bold', lh: HEADING_LH });
           y += 5;
         } else if (raw.startsWith('### ')) {
           y += 10;
           ensureRoom(13 * HEADING_LH + 2 * BODY_SIZE * BODY_LH + 10);
-          writeBlock(trimmed, { size: 12.5, style: 'bold', lh: HEADING_LH });
+          writeBlock(headingText, { size: 12.5, style: 'bold', lh: HEADING_LH });
           y += 4;
         } else if (/^\s*[-*+]\s+/.test(raw)) {
           const nested = /^\s{2,}/.test(raw);

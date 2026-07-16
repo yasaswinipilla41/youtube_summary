@@ -18,8 +18,6 @@ import {
   Users,
   Youtube,
 } from 'lucide-react';
-import { getProfile } from '@/lib/auth';
-
 const NAV_LINKS = [
   { href: '#top', label: 'Home' },
   { href: '#about', label: 'About Us' },
@@ -44,10 +42,11 @@ function Card({ className = '', children }: { className?: string; children: Reac
   );
 }
 
-export default async function LandingPage() {
-  const profile = await getProfile();
-  const appHref = profile ? (profile.role === 'admin' ? '/admin' : '/dashboard') : '/login';
-  const ctaLabel = profile ? 'Go to Dashboard' : 'Get Started Free';
+export default function LandingPage() {
+  // The landing page is always the entry point. "Sign In" leads to the
+  // existing Google sign-in page; already-authenticated users are forwarded
+  // from /login to their dashboard by the middleware.
+  const appHref = '/login';
 
   return (
     <div id="top" className="min-h-screen bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100">
@@ -80,19 +79,11 @@ export default async function LandingPage() {
           </nav>
 
           <div className="flex items-center gap-2">
-            {!profile && (
-              <Link
-                href="/login"
-                className="hidden rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:text-indigo-600 dark:text-slate-300 sm:block"
-              >
-                Log In
-              </Link>
-            )}
             <Link
               href={appHref}
               className="rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2 text-sm font-semibold text-white shadow-md transition hover:opacity-90 sm:px-5"
             >
-              {ctaLabel}
+              Sign In
             </Link>
           </div>
         </div>
@@ -145,7 +136,7 @@ export default async function LandingPage() {
                   href={appHref}
                   className="flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 px-6 py-3 font-semibold text-white shadow-lg transition hover:opacity-90"
                 >
-                  {ctaLabel} <ArrowRight className="h-4 w-4" />
+                  Sign In <ArrowRight className="h-4 w-4" />
                 </Link>
                 <a
                   href="#features"
@@ -479,7 +470,7 @@ export default async function LandingPage() {
                     : 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white hover:opacity-90'
                 }`}
               >
-                {ctaLabel}
+                Get Started Free
               </Link>
             </div>
           ))}
@@ -538,7 +529,7 @@ export default async function LandingPage() {
               href={appHref}
               className="flex items-center gap-2 rounded-full border border-white/40 px-6 py-3 font-semibold text-white transition hover:bg-white/10"
             >
-              {ctaLabel} <ArrowRight className="h-4 w-4" />
+              Sign In <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>

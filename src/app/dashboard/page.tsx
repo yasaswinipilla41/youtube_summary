@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { BookOpen, Coins, ExternalLink, FileText, SearchIcon } from 'lucide-react';
+import { ArrowLeft, BookOpen, Coins, ExternalLink, FileText, SearchIcon } from 'lucide-react';
 import { requireUser } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/server';
 import { SearchBox } from '@/components/SearchBox';
@@ -43,6 +43,12 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       <div>
+        <Link
+          href="/"
+          className="mb-3 inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+        >
+          <ArrowLeft className="h-4 w-4" /> Back to Home
+        </Link>
         <h1 className="text-2xl font-bold sm:text-3xl">Welcome back, {firstName} 👋</h1>
         <p className="mt-1 text-slate-500 dark:text-slate-400">
           What do you want to learn today?
@@ -86,16 +92,18 @@ export default async function DashboardPage() {
             <ul className="divide-y divide-slate-100 dark:divide-slate-700">
               {summaries.map((s) => (
                 <li key={s.id} className="flex items-center justify-between gap-2 py-2.5">
+                  {/* Text color never changes on hover/visited — only an
+                      underline appears, keeping topics readable in dark mode. */}
                   <Link
                     href={`/dashboard/notes/${s.id}`}
-                    className="min-w-0 flex-1 truncate font-medium transition hover:text-brand-600 dark:hover:text-brand-100"
+                    className="min-w-0 flex-1 truncate font-medium text-slate-900 underline-offset-4 transition hover:underline dark:text-white"
                   >
                     {s.topic}
                   </Link>
                   <span className="shrink-0 text-xs text-slate-400">{timeAgo(s.created_at)}</span>
                   <Link
                     href={`/dashboard/notes/${s.id}/content`}
-                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-slate-700 dark:hover:text-brand-100"
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-700 dark:hover:text-white"
                     title="Open study content"
                     aria-label={`Open study content for ${s.topic}`}
                   >
