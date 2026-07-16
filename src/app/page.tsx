@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import {
   ArrowRight,
   Bot,
@@ -55,10 +56,18 @@ function Card({ className = '', children }: { className?: string; children: Reac
   );
 }
 
-export default function LandingPage() {
+export default async function LandingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ code?: string }>;
+}) {
+  // Safety net: if an OAuth code ever lands on the homepage (misconfigured
+  // Site URL fallback), forward it to the callback so login still completes.
+  const { code } = await searchParams;
+  if (code) redirect(`/auth/callback?code=${encodeURIComponent(code)}`);
+
   // The landing page is always the entry point. "Sign In" leads to the
-  // existing Google sign-in page; already-authenticated users are forwarded
-  // from /login to their dashboard by the middleware.
+  // existing Google sign-in page.
   const appHref = '/login';
 
   return (
